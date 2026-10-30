@@ -6,3 +6,12 @@ stages:
       - data/raw/bank-additional-full.csv
     outs:
       - docs/figure/
+
+  test_data_quality:
+    cmd: pytest test/test_data_quality.py -v --html=docs/test_results/test_results.html --self-contained-html --junitxml=docs/test_results/test_results.xml
+    deps:
+      - test/test_data_quality.py
+      - data/raw/bank-additional-full.csv
+    outs:
+      - docs/test_results/test_results.html
+      - docs/test_results/test_results.xml
