@@ -1,0 +1,19 @@
+schema: '2.0'
+stages:
+  visualize_data:
+    cmd: python src/data_visualization.py
+    deps:
+    - path: data/raw/bank-additional-full.csv
+      hash: md5
+      md5: f6cb2c1256ffe2836b36df321f46e92c
+      size: 5834924
+    - path: src/data_visualization.py
+      hash: md5
+      md5: b0182e2c82be4efd121fd0b699924fac
+      size: 1944
+    outs:
+    - path: docs/figure/
+      hash: md5
+      md5: bf3e660ed3083f6b65dabb46d8d7a748.dir
+      size: 67431
+      nfiles: 4

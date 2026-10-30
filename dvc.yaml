@@ -1,0 +1,8 @@
+stages:
+  visualize_data:
+    cmd: python src/data_visualization.py
+    deps:
+      - src/data_visualization.py
+      - data/raw/bank-additional-full.csv
+    outs:
+      - docs/figure/
