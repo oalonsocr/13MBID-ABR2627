@@ -15,3 +15,12 @@ stages:
     outs:
       - docs/test_results/test_results.html
       - docs/test_results/test_results.xml
+
+  test_data_gx:
+    cmd: pytest test/test_data_gx.py -v --html=docs/test_results/test_results_gx.html --self-contained-html --junitxml=docs/test_results/test_results_gx.xml
+    deps:
+      - test/test_data_gx.py
+      - data/raw/bank-additional-full.csv
+    outs:
+      - docs/test_results/test_results_gx.html
+      - docs/test_results/test_results_gx.xml
