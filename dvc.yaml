@@ -1,9 +1,10 @@
+
 stages:
   visualize_data:
     cmd: python src/data_visualization.py
     deps:
       - src/data_visualization.py
-      - data/raw/bank-additional-full.csv
+      - data/processed/bank-processed.csv
     outs:
       - docs/figure/
 
@@ -11,7 +12,7 @@ stages:
     cmd: pytest test/test_data_quality.py -v --html=docs/test_results/test_results.html --self-contained-html --junitxml=docs/test_results/test_results.xml
     deps:
       - test/test_data_quality.py
-      - data/raw/bank-additional-full.csv
+      - data/processed/bank-processed.csv
     outs:
       - docs/test_results/test_results.html
       - docs/test_results/test_results.xml
@@ -20,7 +21,15 @@ stages:
     cmd: pytest test/test_data_gx.py -v --html=docs/test_results/test_results_gx.html --self-contained-html --junitxml=docs/test_results/test_results_gx.xml
     deps:
       - test/test_data_gx.py
-      - data/raw/bank-additional-full.csv
+      - data/processed/bank-processed.csv
     outs:
       - docs/test_results/test_results_gx.html
       - docs/test_results/test_results_gx.xml
+  preprocess_data:
+      cmd: python src/data_preparation.py
+      deps:
+        - src/data_preparation.py
+        - data/raw/bank-additional-full.csv
+      outs:
+        - data/processed/bank-processed.csv
+        - docs/transformations.txt
