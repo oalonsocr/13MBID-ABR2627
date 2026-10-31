@@ -5,8 +5,8 @@ stages:
     deps:
     - path: data/processed/bank-processed.csv
       hash: md5
-      md5: c5aaab1eb2f8825c06a8d661a772b6cd
-      size: 4444956
+      md5: 581e296404c552b09aa03705d118fbe5
+      size: 5239282
     - path: src/data_visualization.py
       hash: md5
       md5: b0182e2c82be4efd121fd0b699924fac
@@ -24,8 +24,8 @@ stages:
     deps:
     - path: data/processed/bank-processed.csv
       hash: md5
-      md5: c5aaab1eb2f8825c06a8d661a772b6cd
-      size: 4444956
+      md5: 581e296404c552b09aa03705d118fbe5
+      size: 5239282
     - path: test/test_data_quality.py
       hash: md5
       md5: 20d390a7f2afe4fa02bfaf80f4906b74
@@ -33,11 +33,11 @@ stages:
     outs:
     - path: docs/test_results/test_results.html
       hash: md5
-      md5: b406079e548487b8b3fe9708f284b63e
+      md5: db91112f97e447b336ff21ec8973f30b
       size: 33894
     - path: docs/test_results/test_results.xml
       hash: md5
-      md5: 21c2965258119cfc012a24f4229d183e
+      md5: 0d087df1846ec626f8ac39c32dacfdde
       size: 410
   test_data_gx:
     cmd: pytest test/test_data_gx.py -v 
@@ -46,8 +46,8 @@ stages:
     deps:
     - path: data/processed/bank-processed.csv
       hash: md5
-      md5: c5aaab1eb2f8825c06a8d661a772b6cd
-      size: 4444956
+      md5: 581e296404c552b09aa03705d118fbe5
+      size: 5239282
     - path: test/test_data_gx.py
       hash: md5
       md5: 44c5da5981218a8b7ae2ce04cba38595
@@ -55,11 +55,11 @@ stages:
     outs:
     - path: docs/test_results/test_results_gx.html
       hash: md5
-      md5: 76138c2eac651a3881b6d9326bd9ef7c
-      size: 33979
+      md5: ae71ec347c673023d8478226112acb64
+      size: 33977
     - path: docs/test_results/test_results_gx.xml
       hash: md5
-      md5: a889ce6444e506d5bda312ad9ea4e195
+      md5: d40f257917ba1cf86608fdfb5bfee11c
       size: 337
   preprocess_data:
     cmd: python src/data_preparation.py
@@ -70,14 +70,14 @@ stages:
       size: 5834924
     - path: src/data_preparation.py
       hash: md5
-      md5: 3f57850a349b1768c5cd0c611248876d
-      size: 1796
+      md5: 1eb8e503eada2315b503bb1b8ebdd2dc
+      size: 5043
     outs:
     - path: data/processed/bank-processed.csv
       hash: md5
-      md5: c5aaab1eb2f8825c06a8d661a772b6cd
-      size: 4444956
+      md5: 581e296404c552b09aa03705d118fbe5
+      size: 5239282
     - path: docs/transformations.txt
       hash: md5
-      md5: 4ea01a4904ef7df447067bf13e1b531c
-      size: 319
+      md5: eae11caa7281e5d4e98ba57d64fda022
+      size: 992
