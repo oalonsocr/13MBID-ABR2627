@@ -1,5 +1,14 @@
 
 stages:
+  preprocess_data:
+    cmd: python src/data_preparation.py
+    deps:
+      - src/data_preparation.py
+      - data/raw/bank-additional-full.csv
+    outs:
+      - data/processed/bank-processed.csv
+      - docs/transformations.txt
+
   visualize_data:
     cmd: python src/data_visualization.py
     deps:
@@ -25,11 +34,15 @@ stages:
     outs:
       - docs/test_results/test_results_gx.html
       - docs/test_results/test_results_gx.xml
-  preprocess_data:
-      cmd: python src/data_preparation.py
-      deps:
-        - src/data_preparation.py
-        - data/raw/bank-additional-full.csv
-      outs:
-        - data/processed/bank-processed.csv
-        - docs/transformations.txt
+
+  train_model:
+    cmd: python src/train_model.py
+    deps:
+      - src/train_model.py
+      - data/processed/bank-processed.csv
+    outs:
+      - models/best_model.joblib
+      - reports/model_comparison.csv
+    metrics:
+      - reports/metrics.json
+

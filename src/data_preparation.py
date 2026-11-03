@@ -39,7 +39,11 @@ def preprocess_data(input_path=INPUT_CSV, output_path=OUTPUT_CSV):
     duplicados = df.duplicated().sum()
     df.drop_duplicates(inplace=True)
 
+
     transformaciones.append(f"Se eliminaron {duplicados} registros duplicados.")
+
+    map = {'yes':1, 'no':0}
+    df['y']= df['y'].map(map)
 
     # 6. Validar rangos de variables numéricas
     # Se identifican valores inválidos sin eliminarlos automáticamente.

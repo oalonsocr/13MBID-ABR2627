@@ -162,3 +162,11 @@ cython_debug/
 mlruns
 .vscode
 .ruff_cache
+
+# MLflow
+mlflow.db
+mlflow.db-shm
+mlflow.db-wal
+mlruns/
+# DVC local storage
+/.datastorage/

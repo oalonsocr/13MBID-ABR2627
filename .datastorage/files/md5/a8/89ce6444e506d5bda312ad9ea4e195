@@ -1,1 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="1.089" timestamp="2026-10-31T00:14:50.854325-05:00" hostname="DESKTOP-KSK4JTT"><testcase classname="test.test_data_gx" name="test_great_expectations" time="0.117" /></testsuite></testsuites>
