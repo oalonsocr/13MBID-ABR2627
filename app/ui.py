@@ -2,22 +2,26 @@
 import streamlit as st
 import requests
 import pandas as pd
+import json
 
 # ==========================================================
 # 1. CONFIGURACIÓN GENERAL
 # ==========================================================
 
 st.set_page_config(
-    page_title="Bank Marketing - Predicción ML",
+    page_title="Bank Marketing - Machine Learning",
     page_icon="📊",
     layout="wide"
 )
 
-st.title("📊 Sistema de Predicción - Bank Marketing")
+st.title("📊 Bank Marketing Prediction")
 st.markdown(
     """
-    Aplicación de Machine Learning para predecir si un cliente
-    aceptará una oferta de depósito a plazo.
+    ### Sistema de predicción de aceptación de depósitos a plazo
+
+    Aplicación de Machine Learning que permite evaluar la probabilidad
+    de aceptación de una oferta bancaria a partir de las características
+    del cliente y de las campañas de marketing.
     """
 )
 
@@ -25,16 +29,18 @@ st.markdown(
 # 2. CONFIGURACIÓN DE LA API
 # ==========================================================
 
-st.sidebar.header("⚙️ Configuración de conexión")
+st.sidebar.title("⚙️ Configuración")
+
+st.sidebar.markdown("### Conexión con FastAPI")
 
 API_BASE_URL = st.sidebar.text_input(
-    "URL de la API FastAPI",
+    "URL de la API",
     value="https://api-1mbid.onrender.com",
     placeholder="https://tu-api.onrender.com",
-    help="Ingresa la URL pública o local de tu API."
+    help="Ingresa la URL base de tu API FastAPI."
 ).strip().rstrip("/")
 
-# Evitar duplicar /predict si el usuario pega la URL completa
+# Permitir que el usuario ingrese la URL con o sin /predict
 if API_BASE_URL.endswith("/predict"):
     API_BASE_URL = API_BASE_URL[:-8].rstrip("/")
 
@@ -42,37 +48,49 @@ API_URL = f"{API_BASE_URL}/predict"
 
 st.sidebar.caption(f"Endpoint: {API_URL}")
 
-if st.sidebar.button("🔌 Probar conexión", use_container_width=True):
+# ----------------------------------------------------------
+# PRUEBA DE CONEXIÓN
+# ----------------------------------------------------------
+
+if st.sidebar.button(
+    "🔌 Probar conexión",
+    use_container_width=True
+):
 
     if not API_BASE_URL:
         st.sidebar.error("Ingresa una URL válida.")
+
     else:
         try:
-            with st.spinner("Conectando con FastAPI..."):
+
+            with st.spinner("Verificando conexión..."):
+
                 response = requests.get(
-                    API_BASE_URL,
+                    f"{API_BASE_URL}/openapi.json",
                     timeout=30
                 )
 
             response.raise_for_status()
 
-            st.sidebar.success("✅ API disponible")
+            st.sidebar.success("✅ API conectada correctamente")
 
         except requests.exceptions.RequestException as error:
+
             st.sidebar.error(
-                f"❌ No se pudo conectar con la API: {error}"
+                f"No se pudo conectar con la API: {error}"
             )
 
 st.sidebar.divider()
 
 st.sidebar.markdown(
     """
-    **Información del proyecto**
+    ### Información del proyecto
 
-    - Modelo: Gradient Boosting
-    - Framework API: FastAPI
-    - Interfaz: Streamlit
-    - Dataset: Bank Marketing
+    - **Modelo:** Gradient Boosting
+    - **API:** FastAPI
+    - **Interfaz:** Streamlit
+    - **Dataset:** Bank Marketing
+    - **Proyecto:** 13MBID-ABR2627
     """
 )
 
@@ -80,24 +98,25 @@ st.sidebar.markdown(
 # 3. FORMULARIO DE ENTRADA
 # ==========================================================
 
-st.subheader("📝 Datos del cliente")
+st.subheader("📝 Información del cliente")
 
 st.info(
-    "Completa los datos del cliente para obtener una predicción "
-    "del modelo entrenado."
+    "Completa los siguientes campos para ejecutar una predicción "
+    "utilizando el modelo entrenado."
 )
 
 with st.form("prediction_form"):
 
-    # ------------------------------------------------------
-    # VARIABLES PERSONALES
-    # ------------------------------------------------------
+    # ======================================================
+    # INFORMACIÓN PERSONAL
+    # ======================================================
 
     st.markdown("### 👤 Información personal")
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
+
         age = st.number_input(
             "Edad",
             min_value=18,
@@ -107,6 +126,7 @@ with st.form("prediction_form"):
         )
 
     with col2:
+
         job = st.selectbox(
             "Ocupación",
             [
@@ -126,6 +146,7 @@ with st.form("prediction_form"):
         )
 
     with col3:
+
         marital = st.selectbox(
             "Estado civil",
             [
@@ -139,6 +160,7 @@ with st.form("prediction_form"):
     col1, col2 = st.columns(2)
 
     with col1:
+
         education = st.selectbox(
             "Nivel educativo",
             [
@@ -154,6 +176,7 @@ with st.form("prediction_form"):
         )
 
     with col2:
+
         housing = st.selectbox(
             "¿Tiene préstamo hipotecario?",
             ["yes", "no", "unknown"]
@@ -162,27 +185,31 @@ with st.form("prediction_form"):
     col1, col2 = st.columns(2)
 
     with col1:
+
         loan = st.selectbox(
             "¿Tiene préstamo personal?",
             ["no", "yes", "unknown"]
         )
 
     with col2:
+
         contact = st.selectbox(
             "Tipo de contacto",
             ["cellular", "telephone"]
         )
 
-    # ------------------------------------------------------
-    # VARIABLES DE CAMPAÑA
-    # ------------------------------------------------------
+    # ======================================================
+    # INFORMACIÓN DE LA CAMPAÑA
+    # ======================================================
 
     st.divider()
+
     st.markdown("### 📞 Información de la campaña")
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
+
         month = st.selectbox(
             "Mes del último contacto",
             [
@@ -194,40 +221,44 @@ with st.form("prediction_form"):
         )
 
     with col2:
+
         day_of_week = st.selectbox(
             "Día de la semana",
             ["mon", "tue", "wed", "thu", "fri"]
         )
 
     with col3:
+
         duration = st.number_input(
             "Duración de la llamada (segundos)",
             min_value=0,
             value=200,
-            step=1,
-            help="Duración de la llamada en segundos."
+            step=1
         )
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
+
         campaign = st.number_input(
-            "Número de contactos en esta campaña",
+            "Contactos en la campaña actual",
             min_value=1,
             value=2,
             step=1
         )
 
     with col2:
+
         pdays = st.number_input(
             "Días desde el contacto anterior",
             min_value=0,
             value=999,
             step=1,
-            help="999 significa que no hubo contacto previo."
+            help="999 indica que el cliente no fue contactado anteriormente."
         )
 
     with col3:
+
         previous = st.number_input(
             "Contactos en campañas anteriores",
             min_value=0,
@@ -237,19 +268,25 @@ with st.form("prediction_form"):
 
     poutcome = st.selectbox(
         "Resultado de la campaña anterior",
-        ["nonexistent", "failure", "success"]
+        [
+            "nonexistent",
+            "failure",
+            "success"
+        ]
     )
 
-    # ------------------------------------------------------
-    # VARIABLES ECONÓMICAS
-    # ------------------------------------------------------
+    # ======================================================
+    # INDICADORES ECONÓMICOS
+    # ======================================================
 
     st.divider()
+
     st.markdown("### 📈 Indicadores económicos")
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
+
         emp_var_rate = st.number_input(
             "Tasa de variación del empleo",
             value=1.1,
@@ -257,6 +294,7 @@ with st.form("prediction_form"):
         )
 
     with col2:
+
         cons_price_idx = st.number_input(
             "Índice de precios al consumidor",
             value=93.994,
@@ -264,6 +302,7 @@ with st.form("prediction_form"):
         )
 
     with col3:
+
         cons_conf_idx = st.number_input(
             "Índice de confianza del consumidor",
             value=-36.4,
@@ -273,6 +312,7 @@ with st.form("prediction_form"):
     col1, col2 = st.columns(2)
 
     with col1:
+
         euribor3m = st.number_input(
             "Tasa Euribor 3 meses",
             value=4.857,
@@ -280,15 +320,16 @@ with st.form("prediction_form"):
         )
 
     with col2:
+
         nr_employed = st.number_input(
             "Número de empleados",
             value=5191.0,
             format="%.3f"
         )
 
-    # ------------------------------------------------------
+    # ======================================================
     # BOTÓN DE PREDICCIÓN
-    # ------------------------------------------------------
+    # ======================================================
 
     st.divider()
 
@@ -299,17 +340,23 @@ with st.form("prediction_form"):
 
 
 # ==========================================================
-# 4. CONSTRUCCIÓN DEL PAYLOAD Y PREDICCIÓN
+# 4. EJECUCIÓN DE LA PREDICCIÓN
 # ==========================================================
 
 if submitted:
 
     if not API_BASE_URL:
-        st.error("Debes configurar la URL de la API.")
+
+        st.error("Debes ingresar la URL de la API.")
+
         st.stop()
 
-    # Los 19 campos originales que espera el modelo
+    # ------------------------------------------------------
+    # CONSTRUCCIÓN DEL PAYLOAD
+    # ------------------------------------------------------
+
     payload = {
+
         "age": age,
         "job": job,
         "marital": marital,
@@ -329,12 +376,17 @@ if submitted:
         "cons_conf_idx": cons_conf_idx,
         "euribor3m": euribor3m,
         "nr_employed": nr_employed
+
     }
+
+    # ------------------------------------------------------
+    # SOLICITUD HTTP
+    # ------------------------------------------------------
 
     try:
 
         with st.spinner(
-            "El modelo está procesando los datos..."
+            "Procesando información con el modelo de Machine Learning..."
         ):
 
             response = requests.post(
@@ -347,77 +399,157 @@ if submitted:
 
             resultado = response.json()
 
-        # --------------------------------------------------
-        # 5. MOSTRAR RESULTADOS
-        # --------------------------------------------------
+        # ==================================================
+        # 5. RESULTADOS
+        # ==================================================
 
         st.divider()
+
         st.subheader("🎯 Resultado de la predicción")
 
         prediction = resultado.get("prediction")
-        probabilities = resultado.get("probability", {})
 
-        # Interpretación del resultado
+        probabilities = resultado.get(
+            "probability",
+            {}
+        )
+
         prediction_text = str(prediction).lower()
 
+        # --------------------------------------------------
+        # INTERPRETACIÓN
+        # --------------------------------------------------
+
         if prediction_text in ["1", "yes", "true"]:
+
             st.success(
-                "El modelo predice que el cliente SÍ aceptaría "
-                "la oferta de depósito a plazo."
+                """
+                **El modelo predice que el cliente SÍ aceptaría
+                la oferta de depósito a plazo.**
+                """
             )
 
         elif prediction_text in ["0", "no", "false"]:
+
             st.warning(
-                "El modelo predice que el cliente NO aceptaría "
-                "la oferta de depósito a plazo."
+                """
+                **El modelo predice que el cliente NO aceptaría
+                la oferta de depósito a plazo.**
+                """
             )
 
         else:
-            st.info(f"Predicción del modelo: {prediction}")
 
-        # Mostrar probabilidades
+            st.info(
+                f"Predicción obtenida: {prediction}"
+            )
+
+        # --------------------------------------------------
+        # PROBABILIDADES
+        # --------------------------------------------------
+
+        st.markdown("### 📊 Probabilidades por clase")
+
         if probabilities:
 
-            st.markdown("### 📊 Probabilidades por clase")
+            probability_rows = []
 
-            probability_data = pd.DataFrame(
-                {
-                    "Clase": list(probabilities.keys()),
-                    "Probabilidad": [
-                        float(value) * 100
-                        for value in probabilities.values()
-                    ]
-                }
+            for clase, valor in probabilities.items():
+
+                porcentaje = float(valor) * 100
+
+                probability_rows.append(
+                    {
+                        "Clase": str(clase),
+                        "Probabilidad (%)": round(
+                            porcentaje,
+                            2
+                        )
+                    }
+                )
+
+            probability_df = pd.DataFrame(
+                probability_rows
             )
 
-            col1, col2 = st.columns(2)
+            st.table(probability_df)
 
-            for index, (_, row) in enumerate(
-                probability_data.iterrows()
-            ):
+            for row in probability_rows:
 
-                target_col = col1 if index % 2 == 0 else col2
+                st.markdown(
+                    f"**Clase {row['Clase']}**"
+                )
 
-                with target_col:
-                    st.metric(
-                        label=f"Clase {row['Clase']}",
-                        value=f"{row['Probabilidad']:.2f}%"
+                st.progress(
+                    min(
+                        max(
+                            row["Probabilidad (%)"] / 100,
+                            0.0
+                        ),
+                        1.0
                     )
+                )
 
-            st.bar_chart(
-                probability_data.set_index("Clase")
+                st.caption(
+                    f"{row['Probabilidad (%)']:.2f}%"
+                )
+
+        else:
+
+            st.warning(
+                "La API no devolvió probabilidades."
             )
 
-        # Información adicional del modelo
+        # --------------------------------------------------
+        # INFORMACIÓN DEL MODELO
+        # --------------------------------------------------
+
         model_info = resultado.get("model_info")
 
         if model_info:
-            with st.expander("Información del modelo"):
-                st.json(model_info)
 
-        # Mostrar respuesta completa
-        with st.expander("Ver respuesta JSON de la API"):
-            st.json(resultado)
+            st.divider()
+
+            st.markdown("### ⚙️ Información del modelo")
+
+            if isinstance(model_info, dict):
+
+                model_rows = [
+                    {
+                        "Característica": str(clave),
+                        "Valor": str(valor)
+                    }
+                    for clave, valor in model_info.items()
+                ]
+
+                st.table(
+                    pd.DataFrame(model_rows)
+                )
+
+            else:
+
+                st.write(str(model_info))
+
+        # --------------------------------------------------
+        # RESPUESTA JSON
+        # --------------------------------------------------
+
+        st.divider()
+
+        st.markdown("### 🔍 Respuesta completa de la API")
+
+        st.code(
+            json.dumps(
+                resultado,
+                indent=4,
+                ensure_ascii=False
+            ),
+            language="json"
+        )
+
+    # ======================================================
+    # 6. MANEJO DE ERRORES
+    # ======================================================
 
     except requests.exceptions.Timeout:
 
@@ -426,38 +558,43 @@ if submitted:
             "Intenta nuevamente en unos segundos."
         )
 
-    except requests.exceptions.HTTPError:
+    except requests.exceptions.HTTPError as error:
 
         st.error(
-            f"Error HTTP {response.status_code}: "
-            f"{response.text}"
+            f"Error HTTP: {error}"
         )
+
+        if response is not None:
+            st.code(response.text)
 
     except requests.exceptions.ConnectionError:
 
         st.error(
             "No se pudo establecer conexión con FastAPI. "
-            "Verifica que la API esté disponible."
+            "Verifica la URL y el estado del servicio."
         )
 
     except requests.exceptions.RequestException as error:
 
-        st.error(f"Error en la solicitud: {error}")
+        st.error(
+            f"Error en la solicitud: {error}"
+        )
 
-    except ValueError:
+    except (ValueError, TypeError) as error:
 
         st.error(
-            "La API devolvió una respuesta que no contiene "
-            "un JSON válido."
+            f"Error al interpretar la respuesta de la API: {error}"
         )
 
     except Exception as error:
 
-        st.error(f"Se produjo un error inesperado: {error}")
+        st.error(
+            f"Se produjo un error inesperado: {error}"
+        )
 
 
 # ==========================================================
-# 6. PIE DE PÁGINA
+# 7. PIE DE PÁGINA
 # ==========================================================
 
 st.divider()
