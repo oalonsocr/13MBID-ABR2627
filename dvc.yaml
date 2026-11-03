@@ -46,3 +46,12 @@ stages:
     metrics:
       - reports/metrics.json
 
+  validate_training:
+    cmd: python -m pytest -q test/test_training.py
+    deps:
+      - test/test_training.py
+      - config/model_metrics_baseline.json
+      - reports/model_comparison.csv
+    outs:
+      - reports/training_regression.json
+

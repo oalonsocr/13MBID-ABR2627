@@ -1,0 +1,17 @@
+
+{
+    "selected_model": "Gradient Boosting",
+    "baseline_date": "2026-11-03",
+    "metrics": {
+        "test_f1": 0.5944,
+        "test_recall": 0.9429,
+        "test_precision": 0.4340,
+        "test_accuracy": 0.8550
+    },
+    "tolerances": {
+        "test_f1": 0.02,
+        "test_recall": 0.03,
+        "test_precision": 0.03,
+        "test_accuracy": 0.02
+    }
+}

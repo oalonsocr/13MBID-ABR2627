@@ -105,3 +105,23 @@ stages:
       hash: md5
       md5: 486c91ad935d7997bee7f85210206edd
       size: 1952
+  validate_training:
+    cmd: python -m pytest -q test/test_training.py
+    deps:
+    - path: config/model_metrics_baseline.json
+      hash: md5
+      md5: 6a46b1ceb0bcfd8a90d85fe201763978
+      size: 390
+    - path: reports/model_comparison.csv
+      hash: md5
+      md5: 486c91ad935d7997bee7f85210206edd
+      size: 1952
+    - path: test/test_training.py
+      hash: md5
+      md5: bed1d029152c10e6357bfd6aad5f14cf
+      size: 6197
+    outs:
+    - path: reports/training_regression.json
+      hash: md5
+      md5: 1c54ee5cfe1a8f7d7d9f4eaa9f2b3cea
+      size: 1166
