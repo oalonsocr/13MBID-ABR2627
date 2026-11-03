@@ -399,140 +399,94 @@ if submitted:
 
             resultado = response.json()
 
-        # ==================================================
-        # 5. RESULTADOS
-        # ==================================================
+        
+        # ==========================================================
+        # 5. RESULTADOS DE LA PREDICCIÓN
+        # ==========================================================
 
         st.divider()
-
         st.subheader("🎯 Resultado de la predicción")
 
         prediction = resultado.get("prediction")
+        probabilities = resultado.get("probability", {})
+        model_info = resultado.get("model_info", {})
 
-        probabilities = resultado.get(
-            "probability",
-            {}
-        )
+        # ----------------------------------------------------------
+        # INTERPRETACIÓN DE LA PREDICCIÓN
+        # ----------------------------------------------------------
 
         prediction_text = str(prediction).lower()
 
-        # --------------------------------------------------
-        # INTERPRETACIÓN
-        # --------------------------------------------------
-
-        if prediction_text in ["1", "yes", "true"]:
+        if prediction_text == "1":
 
             st.success(
-                """
-                **El modelo predice que el cliente SÍ aceptaría
-                la oferta de depósito a plazo.**
-                """
+                "El modelo predice que el cliente SÍ aceptaría "
+                "la oferta de depósito a plazo."
             )
 
-        elif prediction_text in ["0", "no", "false"]:
+        elif prediction_text == "0":
 
             st.warning(
-                """
-                **El modelo predice que el cliente NO aceptaría
-                la oferta de depósito a plazo.**
-                """
+                "El modelo predice que el cliente NO aceptaría "
+                "la oferta de depósito a plazo."
             )
 
         else:
 
-            st.info(
-                f"Predicción obtenida: {prediction}"
-            )
+            st.info(f"Predicción obtenida: {prediction}")
 
-        # --------------------------------------------------
+        # ----------------------------------------------------------
         # PROBABILIDADES
-        # --------------------------------------------------
+        # ----------------------------------------------------------
 
         st.markdown("### 📊 Probabilidades por clase")
 
         if probabilities:
 
-            probability_rows = []
-
             for clase, valor in probabilities.items():
 
                 porcentaje = float(valor) * 100
 
-                probability_rows.append(
-                    {
-                        "Clase": str(clase),
-                        "Probabilidad (%)": round(
-                            porcentaje,
-                            2
-                        )
-                    }
-                )
-
-            probability_df = pd.DataFrame(
-                probability_rows
-            )
-
-            st.table(probability_df)
-
-            for row in probability_rows:
+                if str(clase) == "1":
+                    nombre_clase = "Aceptaría la oferta"
+                else:
+                    nombre_clase = "No aceptaría la oferta"
 
                 st.markdown(
-                    f"**Clase {row['Clase']}**"
+                    f"**Clase {clase} - {nombre_clase}: {porcentaje:.2f}%**"
                 )
 
                 st.progress(
-                    min(
-                        max(
-                            row["Probabilidad (%)"] / 100,
-                            0.0
-                        ),
-                        1.0
-                    )
-                )
-
-                st.caption(
-                    f"{row['Probabilidad (%)']:.2f}%"
+                    max(0.0, min(1.0, float(valor)))
                 )
 
         else:
 
-            st.warning(
-                "La API no devolvió probabilidades."
-            )
+            st.warning("No se recibieron probabilidades.")
 
-        # --------------------------------------------------
+        # ----------------------------------------------------------
         # INFORMACIÓN DEL MODELO
-        # --------------------------------------------------
+        # ----------------------------------------------------------
 
-        model_info = resultado.get("model_info")
+        st.divider()
 
-        if model_info:
+        st.markdown("### ⚙️ Información del modelo")
 
-            st.divider()
+        if isinstance(model_info, dict):
 
-            st.markdown("### ⚙️ Información del modelo")
+            for clave, valor in model_info.items():
 
-            if isinstance(model_info, dict):
+                nombre = clave.replace("_", " ").title()
 
-                model_rows = [
-                    {
-                        "Característica": str(clave),
-                        "Valor": str(valor)
-                    }
-                    for clave, valor in model_info.items()
-                ]
+                st.markdown(f"- **{nombre}:** {valor}")
 
-                st.table(
-                    pd.DataFrame(model_rows)
-                )
+        else:
 
-            else:
+            st.write(str(model_info))
 
-                st.write(str(model_info))
-
-        # --------------------------------------------------
-        # RESPUESTA JSON
-        # --------------------------------------------------
+        # ----------------------------------------------------------
+        # RESPUESTA COMPLETA DE FASTAPI
+        # ----------------------------------------------------------
 
         st.divider()
 
@@ -546,6 +500,7 @@ if submitted:
             ),
             language="json"
         )
+
 
     # ======================================================
     # 6. MANEJO DE ERRORES
