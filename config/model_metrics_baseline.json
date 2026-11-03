@@ -1,17 +1,22 @@
 
 {
-    "selected_model": "Gradient Boosting",
-    "baseline_date": "2026-11-03",
-    "metrics": {
-        "test_f1": 0.5944,
-        "test_recall": 0.9429,
-        "test_precision": 0.4340,
-        "test_accuracy": 0.8550
-    },
-    "tolerances": {
-        "test_f1": 0.02,
-        "test_recall": 0.03,
-        "test_precision": 0.03,
-        "test_accuracy": 0.02
-    }
+  "age": 35,
+  "job": "technician",
+  "marital": "married",
+  "education": "university.degree",
+  "housing": "yes",
+  "loan": "no",
+  "contact": "cellular",
+  "month": "may",
+  "day_of_week": "mon",
+  "duration": 200,
+  "campaign": 2,
+  "pdays": 999,
+  "previous": 0,
+  "poutcome": "nonexistent",
+  "emp_var_rate": 1.1,
+  "cons_price_idx": 93.994,
+  "cons_conf_idx": -36.4,
+  "euribor3m": 4.857,
+  "nr_employed": 5191.0
 }
